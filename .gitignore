@@ -13,3 +13,6 @@ Cargo.lock
 # Added by cargo
 
 /target
+
+#contains secrets, do not share
+config.toml
