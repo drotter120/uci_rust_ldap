@@ -16,3 +16,6 @@ Cargo.lock
 
 #contains secrets, do not share
 config.toml
+
+#vscode
+.vscode/*
