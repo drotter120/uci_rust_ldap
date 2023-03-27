@@ -6,8 +6,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serde = "1.0.145"
+serde = {versuib = "1.0.145", features = ["derive"]}
 ldap3 = "0.10.5"
+toml = "0.5.2"
+csv = "1.1"
 
 
 

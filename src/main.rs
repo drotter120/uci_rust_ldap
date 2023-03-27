@@ -1,7 +1,35 @@
+//We need serde for serializing data
+//we need ldap3 for connecting to the UCI directory
+//We need toml for easy parsing of our config file
+
+use serde::{Serialize, Deserialize};
+use ldap3::{LdapConn, Scope, SearchEntry};
+use ldap3::result::Result;
+use toml;
+use std::fs;
+use std::env;
+
+#[derive(Deserialize)]
+struct Data{
+    config: Config
+
+}
+
+#[derive(Deserialize,Debug)]
+struct Config{
+    hostname: String,
+    rdn: String,
+    password: String,
+    port: i32
+    
+}
+
+
+
 
 //Create the user fields we will grab from the ldap server
-struct user{
-    campusid: i32,
+struct User{
+    campus_id: i32,
     email: String,
     address: String,
     org: String,
@@ -22,6 +50,19 @@ struct user{
 
 
 
+
+
+
 fn main() {
-    println!("Hello, world!");
+
+    //Read config file
+    let contents = fs::read_to_string("config.toml")
+        .expect("Should have been able to read the file");
+
+    println!("{}", contents);
+
+    let config: Config = toml::from_str(contents.as_str());
+
+    println!("{:?}", config);
+
 }
