@@ -3,7 +3,7 @@
 //We need toml for easy parsing of our config file
 
 use serde::{Serialize, Deserialize};
-use ldap3::{LdapConn, Scope, SearchEntry};
+use ldap3::{LdapConn, Scope, SearchEntry, LdapConnSettings};
 use ldap3::result::Result;
 use toml;
 use std::fs::{self, read};
@@ -56,17 +56,17 @@ struct User{
 fn main() {
 
     //open config file
-    let config:Config = readConfig("config.toml");
+    let config:Config = read_config("config.toml");
 
 
     //Open an LDAP connection using the config
-    
+    get_users(&config, "uciLevel3DepartmentID=IR9014")
     
 
 
 }
 
-fn readConfig(file_path:&str) -> Config{
+fn read_config(file_path:&str) -> Config{
 
     //Error Messages
     let config_format_error:&str = 
@@ -88,26 +88,55 @@ fn readConfig(file_path:&str) -> Config{
     return config;
 }
 
-fn getUsers(config: &Config, filter: &str) -> Vec<User>{
+fn get_users(config: &Config, filter: &str)/* -> Vec<User>*/{
+
+    //init return variable
+    let mut user_list:Vec<User>;
+
+    let ldap_options = LdapConnSettings::new();
+    ldap_options.set_starttls(true);
 
     //connect to LDAP
-    let mut ldap = LdapConn::new(config.hostname.as_str())?;
+    let mut ldap = LdapConn::with_settings(ldap_options, config.hostname.as_str()).unwrap();
     //search and save result
-    let (rs, _res) = ldap.search(
-        config.rds.as_str(), scope::Subtree, filter, ALL_ATTRIBUTES)
+    let rs = ldap.search(
+        config.rdn.as_str(),
+        Scope::Subtree,
+        filter, 
+        vec![
+            "campus_id",
+            "email",
+            "address",
+            "org",
+            "zip",
+            "state",
+            "title",
+            "name",
+            "last_name",
+            "phone",
+            "department",
+            "uci_primary_title_code",
+            "uid",
+            "uci_primary_cto_code",
+            "uci_hr_status"]).unwrap();
 
+            for entry in rs.0 {
+                    let 
+                    println!("Adding {:?} to the user list!\n", SearchEntry::construct(user));
+                }
+            
+           
     
 
-    let user_list:Vec<User>;
 
     return user_list;
 
 }
 
-fn writeCSV(user_list: Vec<User>, file_path:&str){
+fn write_CSV(user_list: Vec<User>, file_path:&str){
 
 }
 
-fn writeJSON(user_list: Vec<User>, file_path:&str){
+fn write_JSON(user_list: Vec<User>, file_path:&str){
 
 }
